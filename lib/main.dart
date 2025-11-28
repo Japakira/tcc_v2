@@ -19,54 +19,41 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var media = MediaQueryData();
-    return MediaQuery(
-      data: media,
-      child: GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          brightness: Brightness.dark,
-          fontFamily: 'Alegreya',
-          // Ensure all text styles default to white
-          textTheme: ThemeData.dark().textTheme.apply(
-            bodyColor: Colors.white,
-            displayColor: Colors.white,
-          ),
-          primaryTextTheme: ThemeData.dark().primaryTextTheme.apply(
-            bodyColor: Colors.white,
-            displayColor: Colors.white,
-          ),
-          useMaterial3: true,
-          appBarTheme: AppBarTheme(
-            backgroundColor: Color.fromRGBO(37, 51, 52, 1),
-            titleTextStyle: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Alegreya',
-              fontSize: 20,
-            ),
-            iconTheme: IconThemeData(color: Colors.white),
-          ),
-          primaryColor: Color.fromRGBO(37, 51, 52, 1),
-          scaffoldBackgroundColor: Color.fromRGBO(37, 51, 52, 1),
-          iconTheme: IconThemeData(color: Colors.white),
-          // Buttons should use white text by default
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: Color(0xFF7C9A92),
-            ),
-          ),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(foregroundColor: Colors.white),
-          ),
-          outlinedButtonTheme: OutlinedButtonThemeData(
-            style: OutlinedButton.styleFrom(foregroundColor: Colors.white),
-          ),
-          buttonTheme: ButtonThemeData(buttonColor: Color(0xFF7C9A92)),
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        fontFamily: 'Alegreya',
+        textTheme: ThemeData.dark().textTheme.apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white,
         ),
-        title: tituloApp,
-        home: CheckAuth(),
+        primaryTextTheme: ThemeData.dark().primaryTextTheme.apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white,
+        ),
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color.fromRGBO(37, 51, 52, 1),
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Alegreya',
+            fontSize: 20,
+          ),
+          iconTheme: IconThemeData(color: Colors.white),
+        ),
+        primaryColor: Color.fromRGBO(37, 51, 52, 1),
+        scaffoldBackgroundColor: Color.fromRGBO(37, 51, 52, 1),
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: Color(0xFF7C9A92),
+          ),
+        ),
       ),
+      title: tituloApp,
+      home: CheckAuth(),
     );
   }
 }

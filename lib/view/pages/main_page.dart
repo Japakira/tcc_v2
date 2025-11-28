@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tcc_v2/controller/autenticacao_controller.dart';
-import 'package:tcc_v2/models/usuario_model.dart';
-import 'package:tcc_v2/services/auth_service.dart';
-import 'package:tcc_v2/services/usuario_service.dart';
 import 'package:tcc_v2/view/pages/iniciativas/iniciativa_nova_page.dart';
 import 'package:tcc_v2/view/pages/iniciativas/iniciativa_lista_page.dart';
 import 'package:tcc_v2/view/widgets/avatar_circulo.dart';
@@ -17,24 +14,10 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final auth = Get.find<AuthService>();
-  final controller = Get.put(AutenticacaoController());
-  int _selectedIndex = 1;
-  String? get email => auth.currentUser?.email;
-  List<Usuario> usuarioAtual = [];
+  // Usar instância existente ao invés de criar outra
+  final controller = Get.find<AutenticacaoController>();
 
-  @override
-  void initState() {
-    super.initState();
-    final service = UsuarioService();
-    service
-        .getUsuarioByEmail(email!)
-        .then(
-          (result) => setState(() {
-            usuarioAtual = result;
-          }),
-        );
-  }
+  int _selectedIndex = 1;
 
   static const List<Widget> _widgetOptions = <Widget>[
     Padding(padding: EdgeInsets.all(12.0), child: NovaIniciativa()),
@@ -49,79 +32,76 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    MediaQuery.of(context);
-    return SafeArea(
-      child: Scaffold(
-        drawerEdgeDragWidth: 10,
-        appBar: AppBar(
-          title: Center(
+    return Scaffold(
+      drawerEdgeDragWidth: 10,
+      appBar: AppBar(
+        title: Obx(
+          () => Center(
             child: Text(
-              usuarioAtual[0].usuarioNome,
-              style: TextStyle(fontSize: 30),
+              controller.usuarioAtual.value?.usuarioNome ?? 'Carregando...',
+              style: const TextStyle(fontSize: 10),
             ),
           ),
-          actions: [
-            AvatarCirculo(pathImagem: 'assets/images/avatar/Avatar01.jpg'),
-          ],
-          leading: Builder(
-            builder: (context) {
-              return GestureDetector(
-                child: HamburgerMenu(),
-                onTap: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              );
-            },
-          ),
         ),
-        body: Center(child: _widgetOptions[_selectedIndex]),
-        drawer: Drawer(
-          backgroundColor: Color(0xFF253334),
-          child: ListView(
-            children: [
-              SizedBox(
-                height: 70,
-                child: InkWell(
-                  onTap: () => controller.logout(),
-                  child: Icon(Icons.exit_to_app_outlined),
+
+        actions: const [
+          AvatarCirculo(pathImagem: 'assets/images/avatar/Avatar01.jpg'),
+        ],
+        leading: Builder(
+          builder: (context) {
+            return GestureDetector(
+              child: const HamburgerMenu(),
+              onTap: () => Scaffold.of(context).openDrawer(),
+            );
+          },
+        ),
+      ),
+      body: _widgetOptions[_selectedIndex],
+      drawer: Drawer(
+        backgroundColor: const Color(0xFF253334),
+        child: ListView(
+          children: [
+            SizedBox(
+              height: 70,
+              child: InkWell(
+                onTap: () => controller.logout(),
+                child: const Icon(
+                  Icons.exit_to_app_outlined,
+                  color: Colors.white,
                 ),
               ),
-              ListTile(
-                title: const Text(
-                  'Novo',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: "Alegreya",
-                    fontSize: 20,
-                  ),
+            ),
+            ListTile(
+              title: const Text(
+                'Novo',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "Alegreya",
+                  fontSize: 20,
                 ),
-                selected: _selectedIndex == 0,
-                onTap: () {
-                  // Update the state of the app
-                  _onItemTapped(0);
-                  // Then close the drawer
-                  Navigator.pop(context);
-                },
               ),
-              ListTile(
-                title: const Text(
-                  'Em andamento',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: "Alegreya",
-                    fontSize: 20,
-                  ),
+              selected: _selectedIndex == 0,
+              onTap: () {
+                _onItemTapped(0);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text(
+                'Em andamento',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "Alegreya",
+                  fontSize: 20,
                 ),
-                selected: _selectedIndex == 1,
-                onTap: () {
-                  // Update the state of the app
-                  _onItemTapped(1);
-                  // Then close the drawer
-                  Navigator.pop(context);
-                },
               ),
-            ],
-          ),
+              selected: _selectedIndex == 1,
+              onTap: () {
+                _onItemTapped(1);
+                Navigator.pop(context);
+              },
+            ),
+          ],
         ),
       ),
     );
