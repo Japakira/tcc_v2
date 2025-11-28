@@ -28,7 +28,7 @@ class UsuarioService {
     return resultUsuarios;
   }
 
-  static Future<List<Usuario>> getUsuarioesByIds(List<String> ids) async {
+  static Future<List<Usuario>> getUsuariosByIds(List<String> ids) async {
     final database = getFirestoreConnection();
     if (ids.isEmpty) return [];
 
@@ -86,20 +86,21 @@ class UsuarioService {
     try {
       final doc = await database.collection('Usuarios').doc(id).get();
       if (!doc.exists) return null;
-      return Usuario.fromFirestore(doc);
+      return Usuario.fromMap(doc.data(), doc.id);
     } catch (e) {
       throw Exception('Erro ao obter usuário: $e');
     }
   }
 
-  Future<Usuario?> getUsuarioByEmail(String email) async {
+  Future<List<Usuario>> getUsuarioByEmail(String email) async {
     final database = getFirestoreConnection();
-    try {
-      final doc = await database.collection('Usuarios').doc(email).get();
-      if (!doc.exists) return null;
-      return Usuario.fromFirestore(doc);
-    } catch (e) {
-      throw Exception('Erro ao obter usuário: $e');
-    }
+
+    final snapshot = await database
+        .collection(COLLECTION_NAME)
+        .where('usuarioEmail', isEqualTo: email)
+        .get();
+    return snapshot.docs
+        .map<Usuario>((doc) => Usuario.fromMap(doc.data(), doc.id))
+        .toList();
   }
 }

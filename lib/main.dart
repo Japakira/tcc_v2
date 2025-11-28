@@ -2,10 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tcc_v2/firebase_options.dart';
-import 'package:tcc_v2/view/pages/main_page.dart';
-// import 'package:tcc_v2/view/pages/login_page.dart';
-// import 'package:tcc_v2/view/pages/iniciativa_lista_page.dart';
-// import 'package:tcc_v2/view/widgets/chechauth.dart';
+import 'package:tcc_v2/view/widgets/chechauth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +13,7 @@ void main() async {
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
-  static const tituloApp = 'AGISP';
+  static const tituloApp = 'AGeIS';
   static const subtituloApp =
       'Aplicativo de Gestão de Iniciativas no Setor Público';
 
@@ -68,10 +65,7 @@ class MainApp extends StatelessWidget {
           buttonTheme: ButtonThemeData(buttonColor: Color(0xFF7C9A92)),
         ),
         title: tituloApp,
-        // home: CheckAuth(),
-        // home: PaginaListaIniciativas(),
-        home: MainPage(),
-        // home: LoginPage(),
+        home: CheckAuth(),
       ),
     );
   }

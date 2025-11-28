@@ -60,7 +60,7 @@ class _MyPaginaDetalheIniciativa extends State<PaginaDetalheIniciativa> {
                           style: TextStyle(color: Color(0xFF253334)),
                         ),
                         AvatarCirculo(
-                          pathImagem: 'assets/images/userAvatar.jpg',
+                          pathImagem: 'assets/images/avatar/avatar_blank.png',
                         ),
                       ],
                     ),

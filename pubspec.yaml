@@ -35,20 +35,23 @@ flutter:
         - asset: assets\fonts\Alegreya-Regular.ttf
           weight: 400
   assets:
-  - assets\images\userAvatar.jpg
-  - assets\images\avatar.png
+  - assets\images\avatar\Avatar01.jpg
+  - assets\images\avatar\avatar_blank.png
 
 flutter_native_splash:
   android: true
-  color: "#253334"
-  image: "assets/images/app/iconFacility.png"
+  color: "#ffffff"
+  image: "assets/images/app/ageis_vetor.png"
+  branding: "assets/images/app/branding_vetor.png"
   android_12:
-    color: "#253334"
+    color: "#ffffff"
+    image: "assets/images/app/ageis_vetor.png"
+    branding: "assets/images/app/branding_vetor.png"
 
 flutter_icons:
-  image_path: "assets/images/app/iconFacility1.png"
+  image_path: "assets/images/app/ageis_vetor.png"
   ios: true
   remove_alpha_ios: true
   android: "launcher_icon"
   adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "assets/images/app/iconFacility.png"
+  adaptive_icon_foreground: "assets/images/app/ageis_vetor.png"

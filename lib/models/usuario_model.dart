@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Usuario {
   final String id;
   final String usuarioNome;
@@ -13,10 +11,18 @@ class Usuario {
     required this.admin,
   });
 
-  factory Usuario.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+  // factory Usuario.fromMap(Map<String, dynamic> data, String documentId) {
+  //   final data = doc.data() as Map<String, dynamic>;
+  //   return Usuario(
+  //     id: doc.id,
+  //     usuarioNome: data['nome'] ?? '',
+  //     usuarioEmail: data['email'] ?? '',
+  //     admin: data['admin'] ?? '',
+  //   );
+  // }
+  factory Usuario.fromMap(Map<String, dynamic> data, String documentId) {
     return Usuario(
-      id: doc.id,
+      id: documentId,
       usuarioNome: data['nome'] ?? '',
       usuarioEmail: data['email'] ?? '',
       admin: data['admin'] ?? '',

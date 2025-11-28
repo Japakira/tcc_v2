@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:show_hide_password/show_hide_password.dart';
 import 'package:get/get.dart';
 import 'package:tcc_v2/controller/autenticacao_controller.dart';
-import 'package:tcc_v2/services/auth_service.dart';
+// import 'package:tcc_v2/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,7 +14,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final controller = Get.put(AutenticacaoController());
 
-  final AuthService authService = Get.put(AuthService());
+  // final AuthService authService = Get.put(AuthService());
 
   @override
   Widget build(BuildContext context) {

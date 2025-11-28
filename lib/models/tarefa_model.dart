@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:tcc_v2/models/usuario_model.dart';
 
 class Tarefa {
   final String tarefaId;
@@ -8,7 +7,7 @@ class Tarefa {
   final bool finalizado;
   final Timestamp prazo;
   final String iniciativaMae;
-  // final List<Usuario> responsaveis;
+  final List<String> responsaveis;
 
   Tarefa({
     required this.tarefaId,
@@ -17,19 +16,18 @@ class Tarefa {
     required this.finalizado,
     required this.prazo,
     required this.iniciativaMae,
-    // required this.responsaveis,
+    required this.responsaveis,
   });
 
-  factory Tarefa.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+  factory Tarefa.fromMap(Map<String, dynamic> data, String documentId) {
     return Tarefa(
-      tarefaId: doc.id,
+      tarefaId: documentId,
       tarefaNome: data['tarefaNome'] ?? '',
       tarefaDescricao: data['tarefaDescricao'] ?? '',
       finalizado: data['finalizado'] ?? false,
       prazo: data['prazo'],
       iniciativaMae: data['iniciativaMae'],
-      // responsaveis: data['responsaveis'],
+      responsaveis: List<String>.from(data['responsaveis'] ?? []),
     );
   }
 
@@ -41,6 +39,7 @@ class Tarefa {
       'finalizado': finalizado,
       'prazo': prazo,
       'iniciativaMae': iniciativaMae,
+      'reponsaveis': responsaveis,
     };
   }
 }
