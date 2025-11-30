@@ -6,20 +6,25 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 const COLLECTION_NAME = "Usuarios";
 
 class UsuarioService {
+  // --------------------------------------------------
+  // GET ALL USERS
+  // --------------------------------------------------
   static Future<List<Usuario>> getAllUsuarios() async {
     final db = getFirestoreConnection();
     List<Usuario> resultUsuarios = List.empty(growable: true);
+
     await db.collection(COLLECTION_NAME).get().then((event) {
       for (var doc in event.docs) {
         var json = doc.data();
-        // print(json);
-        // print(json['usuarioNome']);
+
         resultUsuarios.add(
           Usuario(
             id: doc.id,
-            usuarioNome: json['usuarioNome'],
-            usuarioEmail: json['usuarioEmail'],
-            admin: json['admin'],
+            usuarioNome: json['usuarioNome'] ?? '',
+            usuarioEmail: json['usuarioEmail'] ?? '',
+            admin: json['admin'] ?? false,
+            iniciativasIds: List<String>.from(json['iniciativasIds'] ?? []),
+            imagemUrl: json['imagemUrl'] ?? '', // <-- ADICIONADO
           ),
         );
       }
@@ -28,19 +33,24 @@ class UsuarioService {
     return resultUsuarios;
   }
 
+  // --------------------------------------------------
+  // GET USERS BY LIST OF IDS
+  // --------------------------------------------------
   static Future<List<Usuario>> getUsuariosByIds(List<String> ids) async {
     final database = getFirestoreConnection();
     if (ids.isEmpty) return [];
 
     List<Usuario> result = List.empty(growable: true);
+
     try {
-      // Firestore whereIn tem limite de 10 itens; se mais, fazemos batches simples
       const batchSize = 10;
+
       for (var i = 0; i < ids.length; i += batchSize) {
         final batchIds = ids.sublist(
           i,
           (i + batchSize) > ids.length ? ids.length : i + batchSize,
         );
+
         final snapshot = await database
             .collection(COLLECTION_NAME)
             .where(FieldPath.documentId, whereIn: batchIds)
@@ -52,25 +62,30 @@ class UsuarioService {
             Usuario(
               id: doc.id,
               usuarioNome: json['usuarioNome'] ?? '',
-              admin: json['admin'] ?? '',
               usuarioEmail: json['usuarioEmail'] ?? '',
+              admin: json['admin'] ?? false,
+              iniciativasIds: List<String>.from(json['iniciativasIds'] ?? []),
+              imagemUrl: json['imagemUrl'] ?? '', // <-- ADICIONADO
             ),
           );
         }
       }
     } catch (e) {
-      // fallback: tentar buscar documentos individualmente
+      // fallback busca individual
       for (var id in ids) {
         try {
           final doc = await database.collection(COLLECTION_NAME).doc(id).get();
+
           if (doc.exists) {
             var json = doc.data()!;
             result.add(
               Usuario(
                 id: doc.id,
                 usuarioNome: json['usuarioNome'] ?? '',
-                admin: json['admin'] ?? '',
                 usuarioEmail: json['usuarioEmail'] ?? '',
+                admin: json['admin'] ?? false,
+                iniciativasIds: List<String>.from(json['iniciativasIds'] ?? []),
+                imagemUrl: json['imagemUrl'] ?? '', // <-- ADICIONADO
               ),
             );
           }
@@ -81,17 +96,25 @@ class UsuarioService {
     return result;
   }
 
+  // --------------------------------------------------
+  // GET USER BY ID
+  // --------------------------------------------------
   Future<Usuario?> getUsuario(String id) async {
     final database = getFirestoreConnection();
+
     try {
-      final doc = await database.collection('Usuarios').doc(id).get();
+      final doc = await database.collection(COLLECTION_NAME).doc(id).get();
       if (!doc.exists) return null;
-      return Usuario.fromMap(doc.data(), doc.id);
+
+      return Usuario.fromMap(doc.data()!, doc.id);
     } catch (e) {
-      throw Exception('Erro ao obter usuário: $e');
+      throw Exception("Erro ao obter usuário: $e");
     }
   }
 
+  // --------------------------------------------------
+  // GET USER BY EMAIL
+  // --------------------------------------------------
   Future<List<Usuario>> getUsuarioByEmail(String email) async {
     final database = getFirestoreConnection();
 
@@ -99,8 +122,27 @@ class UsuarioService {
         .collection(COLLECTION_NAME)
         .where('usuarioEmail', isEqualTo: email)
         .get();
+
     return snapshot.docs
-        .map<Usuario>((doc) => Usuario.fromMap(doc.data(), doc.id))
+        .map<Usuario>((doc) => Usuario.fromMap(doc.data()!, doc.id))
         .toList();
+  }
+
+  // --------------------------------------------------
+  // ADD INICIATIVA AO USUÁRIO
+  // --------------------------------------------------
+  Future<void> addIniciativaToUsuario(
+    String usuarioId,
+    String iniciativaId,
+  ) async {
+    final database = getFirestoreConnection();
+
+    try {
+      await database.collection(COLLECTION_NAME).doc(usuarioId).update({
+        'iniciativasIds': FieldValue.arrayUnion([iniciativaId]),
+      });
+    } catch (e) {
+      throw Exception("Erro ao adicionar iniciativa ao usuário: $e");
+    }
   }
 }

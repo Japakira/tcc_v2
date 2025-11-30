@@ -3,38 +3,36 @@ class Usuario {
   final String usuarioNome;
   final String usuarioEmail;
   final bool admin;
+  final List<String> iniciativasIds;
+  final String imagemUrl; // novo campo
 
   Usuario({
     required this.id,
     required this.usuarioNome,
     required this.usuarioEmail,
     required this.admin,
+    required this.iniciativasIds,
+    required this.imagemUrl,
   });
 
-  // factory Usuario.fromMap(Map<String, dynamic> data, String documentId) {
-  //   final data = doc.data() as Map<String, dynamic>;
-  //   return Usuario(
-  //     id: doc.id,
-  //     usuarioNome: data['nome'] ?? '',
-  //     usuarioEmail: data['email'] ?? '',
-  //     admin: data['admin'] ?? '',
-  //   );
-  // }
   factory Usuario.fromMap(Map<String, dynamic> data, String documentId) {
     return Usuario(
       id: documentId,
-      usuarioNome: data['nome'] ?? '',
-      usuarioEmail: data['email'] ?? '',
-      admin: data['admin'] ?? '',
+      usuarioNome: data['usuarioNome'] ?? '',
+      usuarioEmail: data['usuarioEmail'] ?? '',
+      admin: data['admin'] ?? false,
+      iniciativasIds: List<String>.from(data['iniciativasIds'] ?? []),
+      imagemUrl: data['imagemUrl'] ?? '', // novo
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'nome': usuarioNome,
-      'email': usuarioEmail,
+      'usuarioNome': usuarioNome,
+      'usuarioEmail': usuarioEmail,
       'admin': admin,
+      'iniciativasIds': iniciativasIds,
+      'imagemUrl': imagemUrl, // novo
     };
   }
 }

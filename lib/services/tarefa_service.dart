@@ -1,88 +1,120 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tcc_v2/models/tarefa_model.dart';
-import 'package:tcc_v2/services/load_firebase_service.dart';
-
-// ignore: constant_identifier_names
-const COLLECTION_NAME = "Tarefas";
 
 class TarefaService {
-  // Método para buscar as tarefas relacionadas a uma determinada iniciativa
-  static Future<List<Tarefa>> getTarefasById(String iniciativaId) async {
-    final database = getFirestoreConnection();
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-    final snapshot = await database
-        .collection(COLLECTION_NAME)
-        .where('iniciativaMae', isEqualTo: iniciativaId)
-        .get();
-    return snapshot.docs
-        .map<Tarefa>((doc) => Tarefa.fromMap(doc.data(), doc.id))
-        .toList();
-  }
-  // static Future<List<Tarefa>> getTarefasById(String iniciativaId) async {
-  //   final db = getFirestoreConnection();
-  //   final List<Tarefa> resultTarefas = [];
+  /// --------------------------------------------------------------------------
+  /// BUSCAR tarefas por ID da iniciativa mãe
+  /// --------------------------------------------------------------------------
+  Future<List<Tarefa>> getTarefasById(String iniciativaId) async {
+    try {
+      print("🔍 [TarefaService] getTarefasById chamado");
+      print("➡️  Iniciativa ID recebido: $iniciativaId");
 
-  //   try {
-  //     // Busca somente tarefas cuja iniciativaMae == iniciativaId
-  //     QuerySnapshot snapshot = await db
-  //         .collection(COLLECTION_NAME)
-  //         .where('iniciativaMae', isEqualTo: iniciativaId)
-  //         .get();
+      final query = _db
+          .collection('Tarefas')
+          .where('iniciativaMae', isEqualTo: iniciativaId);
 
-  //     for (var doc in snapshot.docs) {
-  //       final json = doc.data() as Map<String, dynamic>;
+      print("📡 Firestore Query → Tarefas onde iniciativaMae = $iniciativaId");
 
-  //       resultTarefas.add(
-  //         Tarefa(
-  //           tarefaId: doc.id,
-  //           tarefaNome: json['tarefaNome'] ?? '',
-  //           tarefaDescricao: json['tarefaDescricao'] ?? '',
-  //           finalizado: json['finalizado'] ?? false,
-  //           prazo: json['prazo'],
-  //           iniciativaMae: json['iniciativaMae'] ?? '',
-  //           responsaveis: List<String>.from(json['responsaveis'] ?? []),
-  //         ),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     // ignore: avoid_print
-  //     print("Erro ao buscar tarefas: $e");
-  //   }
+      final snapshot = await query.get();
 
-  //   return resultTarefas;
-  // }
+      print("📥 Documentos retornados: ${snapshot.docs.length}");
 
-  // Método para buscar adicionar nova tarefa a uma determinada iniciativa
-  static Future<Tarefa> addTarefa({
-    required String iniciativaId,
-    required Map<String, dynamic> tarefaData,
-  }) async {
-    final database = getFirestoreConnection();
-    final docRef = await database
-        .collection(COLLECTION_NAME)
-        .doc(iniciativaId)
-        .add(tarefaData);
-    return Tarefa.fromMap(tarefaData, docRef.id);
+      if (snapshot.docs.isEmpty) {
+        print("⚠️ Nenhuma tarefa encontrada para esta iniciativa.");
+        return [];
+      }
+
+      // LOG detalhado dos documentos
+      for (var doc in snapshot.docs) {
+        print("----- 📄 Documento encontrado -----");
+        print("🆔 ID: ${doc.id}");
+        print("📌 Dados brutos: ${doc.data()}");
+      }
+
+      final tarefas = snapshot.docs.map((doc) {
+        final tarefa = Tarefa.fromFirestore(doc);
+
+        print("✔️ [Tarefa Convertida]");
+        print("ID: ${tarefa.id}");
+        print("Nome: ${tarefa.tarefaNome}");
+        print("Descrição: ${tarefa.tarefaDescricao}");
+        print("Finalizado: ${tarefa.finalizado}");
+        print("Prazo: ${tarefa.prazo}");
+        print("Iniciativa Mãe: ${tarefa.iniciativaMae}");
+        print("Responsáveis: ${tarefa.responsaveis}");
+
+        return tarefa;
+      }).toList();
+
+      return tarefas;
+    } catch (e) {
+      print("❌ Erro getTarefasById: $e");
+      return [];
+    }
   }
 
-  // Método para atualizar o status finalizado de uma tarefa
-  static Future<void> updateTarefaFinalizado({
-    required String tarefaId,
+  /// --------------------------------------------------------------------------
+  /// ADICIONAR nova tarefa
+  /// --------------------------------------------------------------------------
+  Future<String?> addTarefa({required Map<String, dynamic> tarefaData}) async {
+    try {
+      print("🟦 [addTarefa] Dados recebidos:");
+      print(tarefaData);
+
+      final docRef = await _db.collection('Tarefas').add(tarefaData);
+
+      // adiciona o próprio ID ao documento
+      await docRef.update({'id': docRef.id});
+
+      print("🟩 Tarefa criada com ID: ${docRef.id}");
+      return docRef.id;
+    } catch (e) {
+      print("❌ Erro addTarefa: $e");
+      return null;
+    }
+  }
+
+  /// --------------------------------------------------------------------------
+  /// ATUALIZAR campo 'finalizado'
+  /// --------------------------------------------------------------------------
+  Future<void> updateTarefaFinalizado({
+    required String id,
     required bool finalizado,
   }) async {
-    final database = getFirestoreConnection();
-    await database.collection(COLLECTION_NAME).doc(tarefaId).update({
-      'finalizado': finalizado,
-    });
+    try {
+      print("🟨 Atualizando tarefa $id → finalizado = $finalizado");
+
+      await _db.collection('Tarefas').doc(id).update({
+        'finalizado': finalizado,
+      });
+
+      print("🟩 Status finalizado atualizado com sucesso.");
+    } catch (e) {
+      print("❌ Erro updateTarefaFinalizado: $e");
+    }
   }
 
-  //Método para adicionar ou excluir os responsáveis de uma tarefa
-  static Future<void> updateTarefaResponsaveis({
-    required String tarefaId,
+  /// --------------------------------------------------------------------------
+  /// ATUALIZAR lista de responsáveis
+  /// --------------------------------------------------------------------------
+  Future<void> updateTarefaResponsaveis({
+    required String id,
     required List<String> responsaveis,
   }) async {
-    final database = getFirestoreConnection();
-    await database.collection(COLLECTION_NAME).doc(tarefaId).update({
-      'responsaveis': responsaveis,
-    });
+    try {
+      print("👥 Atualizando responsáveis da tarefa $id");
+      print("➡️ Lista enviada: $responsaveis");
+
+      await _db.collection('Tarefas').doc(id).update({
+        'responsaveis': responsaveis,
+      });
+
+      print("🟩 Responsáveis atualizados com sucesso.");
+    } catch (e) {
+      print("❌ Erro updateTarefaResponsaveis: $e");
+    }
   }
 }

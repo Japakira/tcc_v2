@@ -11,9 +11,10 @@ dependencies:
     sdk: flutter
   firebase_core: ^4.2.1
   cloud_firestore: ^6.1.0
+  firebase_storage: ^13.0.4
   show_hide_password: ^0.0.2
   firebase_auth: ^6.1.2
-  get: ^4.7.2
+  get: ^4.7.3
   timezone: ^0.10.1
   image_picker: ^1.2.1
   provider: ^6.1.5+1
@@ -30,28 +31,29 @@ flutter:
   fonts:
     - family: Alegreya
       fonts:
-        - asset: assets\fonts\Alegreya-Medium.ttf
+        - asset: assets/fonts/Alegreya-Medium.ttf
           weight: 500
-        - asset: assets\fonts\Alegreya-Regular.ttf
+        - asset: assets/fonts/Alegreya-Regular.ttf
           weight: 400
   assets:
-  - assets\images\avatar\Avatar01.jpg
-  - assets\images\avatar\avatar_blank.png
+  - assets/images/avatar/Avatar01.jpg
+  - assets/images/avatar/avatar_blank.png
+  - assets/images/app/branding_vetor.png
 
 flutter_native_splash:
   android: true
   color: "#ffffff"
   image: "assets/images/app/ageis_vetor.png"
-  branding: "assets/images/app/branding_vetor.png"
+  branding: "assets/images/app/branding_splash_vetor.png"
   android_12:
     color: "#ffffff"
     image: "assets/images/app/ageis_vetor.png"
-    branding: "assets/images/app/branding_vetor.png"
+    branding: "assets/images/app/branding_splash_vetor.png"
 
-flutter_icons:
+flutter_launcher_icons:
   image_path: "assets/images/app/ageis_vetor.png"
   ios: true
+  android: true
   remove_alpha_ios: true
-  android: "launcher_icon"
   adaptive_icon_background: "#ffffff"
   adaptive_icon_foreground: "assets/images/app/ageis_vetor.png"

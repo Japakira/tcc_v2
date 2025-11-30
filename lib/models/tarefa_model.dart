@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Tarefa {
-  final String tarefaId;
+  final String id;
   final String tarefaNome;
   final String tarefaDescricao;
   final bool finalizado;
@@ -10,7 +10,7 @@ class Tarefa {
   final List<String> responsaveis;
 
   Tarefa({
-    required this.tarefaId,
+    required this.id,
     required this.tarefaNome,
     required this.tarefaDescricao,
     required this.finalizado,
@@ -19,23 +19,24 @@ class Tarefa {
     required this.responsaveis,
   });
 
-  factory Tarefa.fromMap(Map<String, dynamic> data, String documentId) {
+  factory Tarefa.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
     return Tarefa(
-      tarefaId: documentId,
+      id: doc.id,
       tarefaNome: data['tarefaNome'] ?? '',
       tarefaDescricao: data['tarefaDescricao'] ?? '',
+      iniciativaMae: data['iniciativaMae'] ?? '',
       finalizado: data['finalizado'] ?? false,
       prazo: data['prazo'],
-      iniciativaMae: data['iniciativaMae'],
       responsaveis: List<String>.from(data['responsaveis'] ?? []),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'tarefaId': tarefaId,
-      'nome': tarefaNome,
-      'descricao': tarefaDescricao,
+      'tarefaNome': tarefaNome,
+      'tarefaDescricao': tarefaDescricao,
       'finalizado': finalizado,
       'prazo': prazo,
       'iniciativaMae': iniciativaMae,

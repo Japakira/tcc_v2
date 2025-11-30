@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_v2/view/pages/tarefas/tarefas_lista_page.dart';
 
@@ -7,7 +6,7 @@ class CartaoIniciativa extends StatefulWidget {
   final dynamic descricao;
   final dynamic iniciativaId;
   final bool finalizado;
-  final DocumentReference? gestoresRef;
+  final List<String> gestores;
 
   const CartaoIniciativa({
     super.key,
@@ -15,7 +14,7 @@ class CartaoIniciativa extends StatefulWidget {
     this.nome,
     this.descricao,
     this.finalizado = false,
-    required this.gestoresRef,
+    required this.gestores,
   });
 
   @override
@@ -37,9 +36,10 @@ class _CartaoIniciativaState extends State<CartaoIniciativa> {
               builder: (context) => PaginaListaTarefas(
                 iniciativaNome: widget.nome,
                 iniciativaDescricao: widget.descricao,
-                gestoresRef: widget.gestoresRef,
+                gestores: widget.gestores,
                 finalizado: widget.finalizado,
                 iniciativaId: widget.iniciativaId,
+                responsaveis: [],
               ),
             ),
           );

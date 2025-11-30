@@ -15,6 +15,7 @@ class PaginaDetalheIniciativa extends StatefulWidget {
     this.gestoresRef,
     this.id,
     this.tamanho,
+    required gestores,
   });
 
   @override
